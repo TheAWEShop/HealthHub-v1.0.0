@@ -18,29 +18,32 @@ interface UserProfileData {
     } | null;
 }
 
-const UserProfile = (userEmail: String) => {
+interface mail {
+    userEmail: string
+}
+
+const UserProfile = (userEmail: mail) => {
     const { user } = useUser();
-    const userId = user?.id
     const [userData, setUserData] = useState<UserProfileData | null>(null);
 
     useEffect(() => {
-        console.log(userEmail)
+        console.log(userEmail.userEmail)
 
     })
-    // useEffect(() => {
-    //     const fetchUser = async () => {
-    //         if (user?.id) {
-    //             try {
-    //                 const response = await axios.get(`/api/user/${user.id}`);
-    //                 setUserData(response.data);
-    //             } catch (error) {
-    //                 console.error('Failed to fetch user data:', error);
-    //             }
-    //         }
-    //     };
+    useEffect(() => {
+        const fetchUser = async () => {
 
-    //     fetchUser();
-    // }, [user]);
+            try {
+                const response = await axios.get(`/api/user/${userEmail.userEmail}`);
+                setUserData(response.data);
+            } catch (error) {
+                console.error('Failed to fetch user data:', error);
+
+            }
+        };
+
+        fetchUser();
+    }, [userEmail]);
 
     return (
         <div className="container mx-auto p-4 bg-slate-500 text-white">
@@ -69,6 +72,7 @@ const UserProfile = (userEmail: String) => {
             ) : (
                 <p>Loading user data...</p>
             )}
+            This is User Dashboard
         </div>
     );
 };

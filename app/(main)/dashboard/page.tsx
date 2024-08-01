@@ -10,7 +10,6 @@ const Dashboard = async (props: Props) => {
 
         const userEmail = authUser.emailAddresses[0].emailAddress
 
-    const { } = authUser
     return (
         <div>
             dashboard page
