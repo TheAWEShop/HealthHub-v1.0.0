@@ -1,64 +1,68 @@
+'use client';
 import React, { useEffect, useState } from 'react';
-import { useClerk } from '@clerk/nextjs';
-import { Plan, PrismaClient, User } from '@prisma/client';
+import { useUser } from '@clerk/nextjs';
+import axios from 'axios';
+import { currentUser } from '@clerk/nextjs/server';
+import { User } from '@prisma/client';
 
-interface UserWithRelations {
-    id: string;
-    name?: string;
+interface UserProfileData {
+    name: string;
     email: string;
-    password?: string | null;
-    wallet: Number;
-    planId?: string;
-    leftDownlineId?: string;
-    rightDownlineId?: string;
-    createdAt: Date;
-    updatedAt: Date;
-    plan?: Plan;
-    leftDownline?: User;
-    rightDownline?: User;
+    wallet: number;
+    planId: string;
+    leftDownline: {
+        name: string;
+    } | null;
+    rightDownline: {
+        name: string;
+    } | null;
 }
 
-const prisma = new PrismaClient();
-
-const UserProfile = () => {
-    const { user } = useClerk();
-    const [userData, setUserData] = useState<UserWithRelations | null>(null);
+const UserProfile = (userEmail: String) => {
+    const { user } = useUser();
+    const userId = user?.id
+    const [userData, setUserData] = useState<UserProfileData | null>(null);
 
     useEffect(() => {
-        const fetchUser = async () => {
-            if (user?.id) {
-                const userData = await prisma.user.findUnique({
-                    where: { id: user.id },
-                    include: {
-                        plan: true,
-                        leftDownline: true,
-                        rightDownline: true,
-                    },
-                });
-                setUserData(userData);
-            }
-        };
+        console.log(userEmail)
 
-        fetchUser();
-    }, [user]);
+    })
+    // useEffect(() => {
+    //     const fetchUser = async () => {
+    //         if (user?.id) {
+    //             try {
+    //                 const response = await axios.get(`/api/user/${user.id}`);
+    //                 setUserData(response.data);
+    //             } catch (error) {
+    //                 console.error('Failed to fetch user data:', error);
+    //             }
+    //         }
+    //     };
+
+    //     fetchUser();
+    // }, [user]);
 
     return (
-        <div className="user-profile">
+        <div className="container mx-auto p-4 bg-slate-500 text-white">
             {userData ? (
                 <>
-                    <h2>Profile</h2>
+                    <h2 className="text-2xl font-bold mb-4">Profile</h2>
                     <p>Name: {userData.name}</p>
                     <p>Email: {userData.email}</p>
-                    <p>Wallet Balance: {userData.wallet}</p>
-                    <p>Plan: {userData.plan?.name}</p>
+                    <p>Wallet Balance: ${userData.wallet.toFixed(2)}</p>
+                    <p>Plan: {userData.planId}</p>
 
-                    <h3>Downline</h3>
+                    <h3 className="text-xl font-semibold mt-4">Downline</h3>
                     <ul>
-                        {userData.leftDownline && (
+                        {userData.leftDownline ? (
                             <li>Left Downline: {userData.leftDownline.name}</li>
+                        ) : (
+                            <li>No Left Downline</li>
                         )}
-                        {userData?.rightDownline && (
+                        {userData.rightDownline ? (
                             <li>Right Downline: {userData.rightDownline.name}</li>
+                        ) : (
+                            <li>No Right Downline</li>
                         )}
                     </ul>
                 </>

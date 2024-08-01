@@ -18,14 +18,14 @@ export default function Layout({
         <ClerkProvider>
             <html lang="en">
                 <body>
-                    <span className='p-2 border rounded-lg bg-blue-400 m-2'>
+                    {/* <span className='p-2 border rounded-lg bg-blue-400 m-2'>
                     <SignedOut>
                         <SignInButton />
                     </SignedOut>
                     <SignedIn>
                         <UserButton />
                     </SignedIn>
-                    </span>
+                    </span> */}
                     {children}
                 </body>
             </html>

@@ -1,3 +1,4 @@
+import UserProfile from '@/components/UserProfile';
 import { currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 
@@ -7,11 +8,13 @@ const Dashboard = async (props: Props) => {
     const authUser = await currentUser()
     if (!authUser) return redirect('dashboard/sign-in')
 
+        const userEmail = authUser.emailAddresses[0].emailAddress
 
-
+    const { } = authUser
     return (
         <div>
-dashboard page
+            dashboard page
+            <UserProfile userEmail={userEmail}  />
         </div>
     )
 }

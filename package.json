@@ -12,6 +12,7 @@
     "@clerk/nextjs": "^5.2.8",
     "@neondatabase/serverless": "^0.9.4",
     "@prisma/client": "^5.17.0",
+    "axios": "^1.7.2",
     "next": "14.2.5",
     "react": "^18",
     "react-dom": "^18"

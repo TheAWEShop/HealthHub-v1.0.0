@@ -7,33 +7,55 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model User {
-  id                String  @id @default(cuid())
-  name              String?
-  email             String  @unique
-  password          String?
-  wallet            Decimal @default(0)
-  planId            String?
-  leftDownlineId    String?  @unique
-  rightDownlineId   String?  @unique
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+enum PlanType {
+  SILVER
+  GOLD
+  PREMIUM
+}
 
-  plan             Plan?       @relation(fields: [planId], references: [id])
-  orders           Order[]
-  leftDownline     User?       @relation("LeftDownline", fields: [leftDownlineId], references: [id])
-  rightDownline    User?       @relation("RightDownline", fields: [rightDownlineId], references: [id])
-  parents          User[]      @relation("LeftDownline")
-  parents2         User[]      @relation("RightDownline")
+enum Status {
+  pending
+  active
+  inactive
+  suspended
+}
+
+model User {
+  id             String     @id @default(cuid())
+  name           String?
+  email          String     @unique
+  password       String?
+  wallet         Decimal    @default(0)
+  planId         String?
+  status         Status     @default(active)
+  join_date      DateTime   @default(now())
+  referral_code  String?
+  leftDownlineId String?
+  rightDownlineId String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  leftDownline  User?       @relation("LeftDownline", fields: [leftDownlineId], references: [id])
+  rightDownline User?       @relation("RightDownline", fields: [rightDownlineId], references: [id])
+  parents       User[]      @relation("LeftDownline")
+  parents2      User[]      @relation("RightDownline")
+  orders        Order[]
+  commissions   Commission[]
+  plan          Plan?       @relation(fields: [planId], references: [id])
 }
 
 model Plan {
-  id        String  @id @default(cuid())
-  name      String
-  price     Decimal
-  benefits  String?
+  id                   String  @id @default(cuid())
+  type                 PlanType
+  name                 String
+  price                Decimal
+  benefits             String[]
+  commission_structure Json?
+  status               Status   @default(active)
+  start_date           DateTime?
+  end_date             DateTime?
 
-  users     User[]
+  users                User[]
 }
 
 model Product {
@@ -42,17 +64,36 @@ model Product {
   description String?
   price       Decimal
 
-  orders     Order[]
+  orders      Order[]
 }
 
 model Order {
-  id          String  @id @default(cuid())
-  userId      String
-  productId   String
-  quantity    Int
-  totalPrice  Decimal
-  createdAt   DateTime @default(now())
+  id             String    @id @default(cuid())
+  userId         String
+  productId      String
+  quantity       Int
+  totalPrice     Decimal
+  createdAt      DateTime  @default(now())
+  order_status   Status    @default(pending)
+  commission_paid Boolean  @default(false)
+  shipping_address String?
+  payment_status  String?
+  refund_status   String?
+  order_notes     String?
 
-  user        User   @relation(fields: [userId], references: [id])
-  product     Product @relation(fields: [productId], references: [id])
+  user           User      @relation(fields: [userId], references: [id])
+  product        Product   @relation(fields: [productId], references: [id])
+  commissions    Commission[]
+}
+
+model Commission {
+  id        String  @id @default(cuid())
+  userId    String
+  amount    Decimal
+  type      String
+  date      DateTime
+  order_id  String?
+
+  user      User   @relation(fields: [userId], references: [id])
+  order     Order? @relation(fields: [order_id], references: [id], onDelete: Cascade)
 }

@@ -1,32 +1,11 @@
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { SignUp, useClerk } from '@clerk/nextjs';
-import { PrismaClient, User } from '@prisma/client';
+import { SignUp } from '@clerk/nextjs';
 
-const prisma = new PrismaClient();
 
 const SignUpPage = () => {
-  const router = useRouter();
-
-  const handleClerkSignup = async (user: any) => {
-    try {
-      const createdUser = await prisma.user.create({
-        data: {
-          clerkId: user.id,
-          email: user.emailAddresses[0].emailAddress,
-          // Add other default fields
-        },
-      });
-      router.push('/additional-details');
-    } catch (error) {
-      console.error(error);
-      // Handle error
-    }
-  };
 
   return (
-    <div>
-      <SignUp routing="path"   />
+    <div className='h-screen w-sccreen m-0 flex items-center justify-center bg-transparent'>
+      <SignUp  forceRedirectUrl={"dashboard/additional-details"} />
     </div>
   );
 };
