@@ -1,24 +1,52 @@
 'use client';
 
-import { useState } from 'react';
-import { useUser } from '@clerk/nextjs';
+import { useEffect, useState } from 'react';
+import { useClerk, useUser } from '@clerk/nextjs';
 import { FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const AdditionalDetailsPage = () => {
-  const { user } = useUser();
+  const { user } = useClerk();
   const router = useRouter();
+  const [isExistingUser, setIsExistingUser] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: user?.primaryEmailAddress?.emailAddress || '',
     password: '',
-    wallet: 0,
-    planId: '',
-    status: 'active',
+    // wallet: 0,
+    // planId: '',
+    // status: 'active',
     referral_code: '',
     leftDownlineId: '',
     rightDownlineId: '',
   });
+
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get(`/api/user/${user?.primaryEmailAddress?.emailAddress}`);
+        if (response.status === 200) {
+          setIsExistingUser(true);
+          setFormData(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      } finally {
+        setLoading(false)
+      }
+    };
+
+    if (user?.id) {
+      fetchUserData();
+    }
+  }, [user]);
+
+  if (loading)
+    return <p className='absolute top-1/2 left-1/2'>loading...</p>
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -46,21 +74,42 @@ const AdditionalDetailsPage = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 bg-slate-500">
-      <h1 className="text-2xl font-bold mb-4">Additional Details</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label htmlFor="name" className="block text-gray-700 font-bold mb-2">Name</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="border border-gray-300 rounded-md p-2 w-full text-black"
-          />
-        </div>
+    <div className="container mx-auto p-4 bg-gray-300">
 
+      <h1 className="text-2xl font-bold mb-4">
+      {isExistingUser ? 'Profile Settings' : 'Creating New User'}
+
+      </h1>
+
+      <form onSubmit={handleSubmit}>
+
+        {loading ? (
+          <>
+          <Skeleton className='h-4 w-[250px] rounded-lg mt-10' />
+          <Skeleton className='h-9 w-[350px] rounded-lg my-2' />
+        </>
+        ) : (
+          <div className="mb-4">
+            <label htmlFor="name" className="block text-gray-700 font-bold mb-2">Name</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              className="border border-gray-300 rounded-md p-2 w-full text-black"
+            />
+          </div>
+        )}
+
+
+
+{loading ? (
+          <>
+          <Skeleton className='h-4 w-[250px] rounded-lg mt-10' />
+          <Skeleton className='h-9 w-[350px] rounded-lg my-2' />
+        </>
+        ) : (
         <div className="mb-4">
           <label htmlFor="email" className="block text-gray-700 font-bold mb-2">Email</label>
           <input
@@ -72,7 +121,14 @@ const AdditionalDetailsPage = () => {
             className="border border-gray-300 rounded-md p-2 w-full text-black"
           />
         </div>
+        )}
 
+{loading ? (
+          <>
+          <Skeleton className='h-4 w-[250px] rounded-lg mt-10' />
+          <Skeleton className='h-9 w-[350px] rounded-lg my-2' />
+        </>
+        ) : (
         <div className="mb-4">
           <label htmlFor="password" className="block text-gray-700 font-bold mb-2">Password</label>
           <input
@@ -84,8 +140,10 @@ const AdditionalDetailsPage = () => {
             className="border border-gray-300 rounded-md p-2 w-full text-black"
           />
         </div>
+        )}
 
-        <div className="mb-4">
+
+        {/* <div className="mb-4">
           <label htmlFor="wallet" className="block text-gray-700 font-bold mb-2">Wallet</label>
           <input
             type="number"
@@ -95,9 +153,9 @@ const AdditionalDetailsPage = () => {
             onChange={(e) => setFormData({ ...formData, wallet: parseFloat(e.target.value) })}
             className="border border-gray-300 rounded-md p-2 w-full text-black"
           />
-        </div>
+        </div> */}
 
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <label htmlFor="planId" className="block text-gray-700 font-bold mb-2">Plan ID</label>
           <input
             type="text"
@@ -107,9 +165,9 @@ const AdditionalDetailsPage = () => {
             onChange={(e) => setFormData({ ...formData, planId: e.target.value })}
             className="border border-gray-300 rounded-md p-2 w-full text-black"
           />
-        </div>
+        </div> */}
 
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <label htmlFor="status" className="block text-gray-700 font-bold mb-2">Status</label>
           <select
             id="status"
@@ -123,7 +181,7 @@ const AdditionalDetailsPage = () => {
             <option value="inactive">Inactive</option>
             <option value="suspended">Suspended</option>
           </select>
-        </div>
+        </div> */}
 
         <div className="mb-4">
           <label htmlFor="referral_code" className="block text-gray-700 font-bold mb-2">Referral Code</label>
@@ -162,7 +220,7 @@ const AdditionalDetailsPage = () => {
         </div>
 
         <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Submit
+          {isExistingUser ? 'Update' : 'Create'}
         </button>
       </form>
     </div>

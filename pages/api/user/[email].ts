@@ -4,7 +4,16 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    const { email } = req.query;
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+
+    if (req.method === 'OPTIONS') {
+        res.status(200).end();
+        return;
+
+    } const { email } = req.query;
 
     try {
         const userData = await prisma.user.findUnique({
