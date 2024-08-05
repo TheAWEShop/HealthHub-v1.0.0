@@ -9,6 +9,7 @@ interface Links {
   label: string;
   href: string;
   icon: React.JSX.Element | React.ReactNode;
+  subLinks?: Links[];
 }
 
 interface SidebarContextProps {
@@ -186,5 +187,63 @@ export const SidebarLink = ({
         {link.label}
       </motion.span>
     </Link>
+  );
+};
+
+export const SubSidebarLink = ({
+  link,
+  className,
+  ...props
+}: {
+  link: Links;
+  className?: string;
+  props?: LinkProps;
+}) => {
+  const [showSubLinks, setShowSubLinks] = useState(false);
+
+  const toggleSubLinks = () => {
+    setShowSubLinks(!showSubLinks);
+  };
+
+  return (
+    <div>
+      <div onClick={toggleSubLinks} className="cursor-pointer">
+        <Link
+          href={link.href}
+          className={cn(
+            "flex items-center justify-start gap-2 group/sidebar py-2",
+            className
+          )}
+          {...props}
+        >
+          {link.icon}
+
+          <motion.span
+            animate={{
+              display: showSubLinks ? "inline-block" : "none",
+              opacity: showSubLinks ? 1 : 0,
+            }}
+            className="text-neutral-700 dark:text-neutral-200 text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
+          >
+            {link.label}
+          </motion.span>
+        </Link>
+      </div>
+      {showSubLinks && link.subLinks && (
+        <motion.div
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: 'auto', opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          className="ml-6 mt-2 space-y-1"
+        >
+          {link.subLinks.map((subLink, index) => (
+            <Link key={index} href={subLink.href} className="block py-1 px-2 text-sm text-neutral-700 dark:text-neutral-200">
+              {subLink.icon}
+              <span className="ml-2">{subLink.label}</span>
+            </Link>
+          ))}
+        </motion.div>
+      )}
+    </div>
   );
 };

@@ -10,7 +10,7 @@ const Dashboard = async (props: Props) => {
 
 
     const authUser = await currentUser()
-    if (!authUser) return redirect('dashboard/sign-in')
+    if (!authUser) return redirect('/sign-in')
     const userEmail = authUser.emailAddresses[0].emailAddress
 
     return (
