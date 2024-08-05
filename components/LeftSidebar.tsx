@@ -6,7 +6,7 @@ import { ModeToggle } from './ui/ModeToggle'
 import { SignedIn, UserButton } from '@clerk/nextjs'
 import { DashboardIcon, HomeIcon } from '@radix-ui/react-icons'
 import { cn } from '@/lib/utils'
-import { IconSettings, IconUser } from '@tabler/icons-react'
+import { IconSettings, IconUser, IconWifi } from '@tabler/icons-react'
 
 type Props = {}
 
@@ -20,7 +20,7 @@ const links = [
     },
     {
         label: "Profile",
-        href: "#",
+        href: "/account/profile",
         icon: (
             <IconUser className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
         ),
@@ -30,6 +30,13 @@ const links = [
         href: "/additional-details",
         icon: (
             <IconSettings className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        ),
+    },
+    {
+        label: "Direct Sponser",
+        href: "/account/my-direct-sponser",
+        icon: (
+            <IconWifi className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
         ),
     },
 ];
