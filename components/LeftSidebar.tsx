@@ -6,7 +6,7 @@ import { ModeToggle } from './ui/ModeToggle'
 import { SignedIn, UserButton } from '@clerk/nextjs'
 import { DashboardIcon, HomeIcon } from '@radix-ui/react-icons'
 import { cn } from '@/lib/utils'
-import { IconSettings, IconUser, IconWifi } from '@tabler/icons-react'
+import { IconBinaryTree, IconSettings, IconUser, IconWifi } from '@tabler/icons-react'
 
 type Props = {}
 
@@ -37,6 +37,13 @@ const links = [
         href: "/account/my-direct-sponser",
         icon: (
             <IconWifi className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        ),
+    },
+    {
+        label: "Genealogy Tree",
+        href: "/account/genealogy-tree-binary",
+        icon: (
+            <IconBinaryTree className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
         ),
     },
 ];

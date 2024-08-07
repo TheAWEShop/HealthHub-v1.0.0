@@ -14,34 +14,66 @@ enum PlanType {
 }
 
 enum Status {
-  pending
-  active
-  inactive
-  suspended
+  PENDING
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSED
+  SHIPPED
+  DELIVERED
+  CANCELED
+  RETURNED
+}
+
+enum CommissionType {
+  DIRECT
+  LEVEL
+  BONUS
 }
 
 model User {
-  id             String     @id @default(cuid())
-  name           String?
-  email          String     @unique
-  password       String?
-  wallet         Decimal    @default(0)
-  planId         String?
-  status         Status     @default(active)
-  join_date      DateTime   @default(now())
-  referral_code  String?
-  leftDownlineId String?
-  rightDownlineId String?
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
+  id              String    @id @default(cuid())
+  name            String?
+  email           String    @unique
+  password        String?
+  wallet          Decimal   @default(0)
 
-  leftDownline  User?       @relation("LeftDownline", fields: [leftDownlineId], references: [id])
-  rightDownline User?       @relation("RightDownline", fields: [rightDownlineId], references: [id])
-  parents       User[]      @relation("LeftDownline")
-  parents2      User[]      @relation("RightDownline")
-  orders        Order[]
-  commissions   Commission[]
-  plan          Plan?       @relation(fields: [planId], references: [id])
+  planId          String?
+  status          Status    @default(ACTIVE)
+  join_date       DateTime  @default(now())
+  referral_code   String?
+  leftDownlineId  String?   @unique
+  rightDownlineId String?   @unique
+  sponsorId       String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  my_self_pv      Int?
+  my_status       String?
+  kyc_status      String?
+  total_earning   Decimal @default(0)
+  total_balance   Decimal @default(0)
+  user_id         String?
+  referral_link   String?
+  profile_picture String?
+  imageUrl        String?
+  primaryPhoneNumber String?
+  username          String?   @unique
+  clerk_id        String?   @unique
+
+
+  leftDownline    User?     @relation("LeftDownline", fields: [leftDownlineId], references: [id])
+  rightDownline   User?     @relation("RightDownline", fields: [rightDownlineId], references: [id])
+  orders          Order[]
+  commissions     Commission[]
+  plan            Plan?     @relation(fields: [planId], references: [id])
+
+  leftParent      User?     @relation("LeftDownline")
+  rightParent     User?     @relation("RightDownline")
 }
 
 model Plan {
@@ -51,7 +83,7 @@ model Plan {
   price                Decimal
   benefits             String[]
   commission_structure Json?
-  status               Status   @default(active)
+  status               Status   @default(ACTIVE)
   start_date           DateTime?
   end_date             DateTime?
 
@@ -74,7 +106,7 @@ model Order {
   quantity       Int
   totalPrice     Decimal
   createdAt      DateTime  @default(now())
-  order_status   Status    @default(pending)
+  order_status   OrderStatus @default(PENDING)
   commission_paid Boolean  @default(false)
   shipping_address String?
   payment_status  String?
@@ -90,9 +122,10 @@ model Commission {
   id        String  @id @default(cuid())
   userId    String
   amount    Decimal
-  type      String
+  type      CommissionType
   date      DateTime
   order_id  String?
+  commission_plan_id String?
 
   user      User   @relation(fields: [userId], references: [id])
   order     Order? @relation(fields: [order_id], references: [id], onDelete: Cascade)

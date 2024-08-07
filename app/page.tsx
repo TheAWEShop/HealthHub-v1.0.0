@@ -10,7 +10,7 @@ export default function Home() {
 
       </div>
       <span>
-        go to <Link href='/dashboard'> Dashboard</Link>
+        go to <Link className="uppercase border-gray-500 border m-3 rounded-lg p-2" href='/account/dashboard'> Dashboard</Link>
       </span>
     </main>
   );
