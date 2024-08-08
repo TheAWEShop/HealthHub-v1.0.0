@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useClerk, useUser } from '@clerk/nextjs';
 import { FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 import axios from 'axios';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -17,9 +17,9 @@ import { Progress } from '@/components/ui/progress';
 const AdditionalDetailsPage = () => {
   const { user } = useClerk();
   const router = useRouter();
+  const [loading, setLoading] = useState(true)
   const [isExistingUser, setIsExistingUser] = useState(false);
 
-  console.log(user)
 
   const [formData, setFormData] = useState({
     name: user?.fullName,
@@ -27,12 +27,11 @@ const AdditionalDetailsPage = () => {
     password: '',
     referral_code: '',
     clerk_id: user?.id,
-    primaryPhoneNumber: user?.primaryPhoneNumber,
+    primaryPhoneNumber: user?.primaryPhoneNumber?.phoneNumber,
     username: user?.username,
     imageUrl: '',
   });
 
-  const [loading, setLoading] = useState(true)
   const [progress, setProgress] = useState(13)
 
   useEffect(() => {
@@ -44,7 +43,7 @@ const AdditionalDetailsPage = () => {
         password: '',
         referral_code: '',
         clerk_id: user.id,
-        primaryPhoneNumber: user.primaryPhoneNumber,
+        primaryPhoneNumber: user.primaryPhoneNumber?.phoneNumber,
         username: user.username,
         imageUrl: user.imageUrl,
       });
@@ -66,9 +65,11 @@ const AdditionalDetailsPage = () => {
     }
   }, [user]);
 
+  console.log(user?.primaryPhoneNumber?.phoneNumber)
+
   if (loading)
     return <div className='h-screen w-screen relative'>
-      <Progress value={progress} className='max-w-sm absolute top-1/2 left-1/2' />
+      <Progress value={progress} className='absolute top-1/2 left-1/2' />
     </div>
 
   const handleSubmit = async (event: FormEvent) => {
@@ -87,9 +88,9 @@ const AdditionalDetailsPage = () => {
       });
 
       if (response.ok) {
-        router.push('/account/dashboard'); // Redirect to the dashboard on success
+        router.push('/dashboard');
       } else {
-        console.error('Failed to update/create user');
+        console.error('Failed to update/create user:', Error);
       }
     } catch (error) {
       console.error('An error occurred', error);
@@ -97,8 +98,9 @@ const AdditionalDetailsPage = () => {
   };
 
   if (isExistingUser) {
-    return (<span>You are not authorized on this page, please
-      <Link href={'/account/dashboard'}>  click here </Link>
+    return (<span className=' p-10 bg-black text-white h-screen w-screen flex flex-col items-center'>
+      <div className='text-3xl font-bold m-5'>UnAuthorized</div>You are not authorized on this page, please
+      <Link className='text-green-500 underline' href={'/account/dashboard'}>  click here </Link>
       to go to your dashboard</span>)
   }
 

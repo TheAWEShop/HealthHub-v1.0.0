@@ -6,7 +6,7 @@ import { ModeToggle } from './ui/ModeToggle'
 import { SignedIn, UserButton } from '@clerk/nextjs'
 import { DashboardIcon, HomeIcon } from '@radix-ui/react-icons'
 import { cn } from '@/lib/utils'
-import { IconBinaryTree, IconSettings, IconUser, IconWifi } from '@tabler/icons-react'
+import { IconBinaryTree, IconCashBanknote, IconCashRegister, IconKeyFilled, IconPasswordFingerprint, IconSettings, IconUser, IconWallet, IconWifi } from '@tabler/icons-react'
 
 type Props = {}
 
@@ -26,10 +26,10 @@ const links = [
         ),
     },
     {
-        label: "Settings",
-        href: "/additional-details",
+        label: "Change Password",
+        href: "/account/change-password",
         icon: (
-            <IconSettings className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+            <IconKeyFilled className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
         ),
     },
     {
@@ -44,6 +44,34 @@ const links = [
         href: "/account/genealogy-tree-binary",
         icon: (
             <IconBinaryTree className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        ),
+    },
+    {
+        label: "Earning Income",
+        href: "/account/my-wallet-income",
+        icon: (
+            <IconCashBanknote className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        ),
+    },
+    {
+        label: "Wallet Details",
+        href: "/account/my-wallet",
+        icon: (
+            <IconWallet className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        ),
+    },
+    {
+        label: "Payment Withdrawal",
+        href: "/account/payout-request",
+        icon: (
+            <IconCashRegister className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        ),
+    },
+    {
+        label: "Settings",
+        href: "/additional-details",
+        icon: (
+            <IconSettings className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
         ),
     },
 ];
@@ -65,7 +93,7 @@ const LeftSidebar = async (props: Props) => {
                     <Image className='relative -top-10 w-full mix-blend-multiply' src="/logo.jpg" alt="Health Hub" width={270} height={270} />
 
 
-                    <div className="mt-8 flex flex-col gap-2">
+                    <div className="flex flex-col gap-2 relative -top-10">
                         {links.map((link, idx) => (
                             <SidebarLink key={idx} link={link} />
                         ))}
@@ -73,7 +101,6 @@ const LeftSidebar = async (props: Props) => {
 
 
                     <ModeToggle />
-
 
 
                     <div className='font-bold text-base uppercase gap-3 px-2 relative bottom-0'>

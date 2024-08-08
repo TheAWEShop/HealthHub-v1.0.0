@@ -12,6 +12,7 @@ const Dashboard = async (props: Props) => {
     const authUser = await currentUser()
     if (!authUser) return redirect('/sign-in')
     const userEmail = authUser.emailAddresses[0].emailAddress
+    if (authUser) return redirect('/account/dashboard')
 
     return (
         <div className='w-full'>
